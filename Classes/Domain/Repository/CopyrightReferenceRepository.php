@@ -29,12 +29,14 @@ namespace TGM\TgmCopyright\Domain\Repository;
 
 
 use Psr\Http\Message\ServerRequestInterface;
+use TGM\TgmCopyright\Domain\Model\CopyrightReference;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryHelper;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper;
 
 /**
  * The repository for Copyrights
@@ -44,6 +46,7 @@ class CopyrightReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Reposi
     public function __construct(
         private readonly ConnectionPool $connectionPool,
         private readonly Context $context,
+        private readonly DataMapper $dataMapper,
     ) {
         parent::__construct();
     }
@@ -153,9 +156,8 @@ class CopyrightReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Reposi
                 ->executeQuery();
 
             $records = $records->fetchAllAssociative();
-            $dataMapper = GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper::class);
 
-            return $dataMapper->map(\TGM\TgmCopyright\Domain\Model\CopyrightReference::class, $records);
+            return $this->dataMapper->map(CopyrightReference::class, $records);
         }
 
         return [];
